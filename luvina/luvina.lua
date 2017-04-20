@@ -5,17 +5,9 @@
 -- author: AitorATuin
 -- license: GPL3
 
-local _ = require('moses')
+local _ = require('fun')
 
 local luvina = {}
-
-function _.list(iter)
-  local xs = {}
-  for i, v in iter do
-    xs[#xs+1] = v
-  end
-  return xs
-end
 
 local function modules_in_candidates(mod_regex, candidates)
   local modules = _(candidates)
@@ -26,6 +18,10 @@ local function modules_in_candidates(mod_regex, candidates)
     :map(function(i, c) return i, string.match(c, mod_regex) end)
     :value()
   return modules
+end
+
+local function get_candidates()
+  local package_path = package.path
 end
 
 --- Returns a list of available modules able to be loaded in current scope
