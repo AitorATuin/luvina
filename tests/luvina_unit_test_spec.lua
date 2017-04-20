@@ -1,12 +1,13 @@
 -- busted --coverage --verbose
 -- busted tests
 package.path = package.path .. ';' .. os.getenv('PWD') .. '/luvina/?.lua'
+local _ = require('moses')
 local luvina = require('luvina')
 local get_available_modules = luvina.get_available_modules
 
 describe('Luvima unit tests', function ()
   local paths = {
-    {
+    function () return _.loop({
       '/a/b/c/test1.lua',
       '/a/b/c/test2.lua',
       '/a/b/c/test3/init.lua',
@@ -21,13 +22,13 @@ describe('Luvima unit tests', function ()
       '/aa/b/c/d/test12/init.lua',
       '/aa/b/c/d/e/f/test13.lua',
       '/aa/b/c/d/e/f/test14/init.lua',
-    },
+    }) end
   }
 
   describe('Luvima discover modules function', function ()
     it('should work when no paths are defined', function ()
       local search_paths = {}
-      assert.are.same(get_available_modules({}, paths[1]), {})
+      assert.are.same(get_available_modules({}, paths[1]()), {})
     end)
 
     it('should work when no dynamic search paths are defined', function ()
@@ -38,7 +39,7 @@ describe('Luvima unit tests', function ()
         '/a/b/c/d/test5/init.lua'
       }
       local expected = {}
-      assert.are.same(expected, get_available_modules(search_pahts, paths[1]))
+      assert.are.same(expected, get_available_modules(search_pahts, paths[1]()))
     end)
 
     it('should work when we only have ?.lua values', function ()
@@ -46,7 +47,7 @@ describe('Luvima unit tests', function ()
         '/a/b/c/?.lua',
       }
       local expected = {'test1', 'test2'}
-      assert.are.same(expected, get_available_modules(search_pahts, paths[1]))
+      assert.are.same(expected, get_available_modules(search_pahts, paths[1]()))
     end)
 
     it('should work when we only have ?.lua values with nested leved', function ()
@@ -57,7 +58,7 @@ describe('Luvima unit tests', function ()
         '/a/b/c/d/e/f/?.lua'
       }
       local expected = {'test1', 'test2', 'test4', 'test6'}
-      assert.are.same(expected, get_available_modules(search_pahts, paths[1]))
+      assert.are.same(expected, get_available_modules(search_pahts, paths[1]()))
     end)
 
     it('should work when we only have ?/init.lua values', function ()
@@ -65,7 +66,7 @@ describe('Luvima unit tests', function ()
         '/a/b/c/?/init.lua',
       }
       local expected = {'test3'}
-      assert.are.same(expected, get_available_modules(search_pahts, paths[1]))
+      assert.are.same(expected, get_available_modules(search_pahts, paths[1]()))
     end)
 
     it('should work when we only have ?/init.lua values with nested levels', function ()
@@ -74,7 +75,7 @@ describe('Luvima unit tests', function ()
         '/a/b/c/d/e/f/?/init.lua'
       }
       local expected = {'test3', 'test7'}
-      assert.are.same(expected, get_available_modules(search_pahts, paths[1]))
+      assert.are.same(expected, get_available_modules(search_pahts, paths[1]()))
     end)
 
     it('should work with dynamic search paths using ?.lua and ?/init.lua', function ()
@@ -87,7 +88,7 @@ describe('Luvima unit tests', function ()
         '/a/b/c/d/e/f/?/init.lua'
       }
       local expected = {'test1', 'test2', 'test3', 'test5', 'test6', 'test7'}
-      assert.are.same(expected, get_available_modules(search_pahts, paths[1]))
+      assert.are.same(expected, get_available_modules(search_pahts, paths[1]()))
     end)
 
     it("should work with paths with different roots", function ()
@@ -108,7 +109,7 @@ describe('Luvima unit tests', function ()
       local expected = {'test1', 'test2', 'test3', 'test5', 'test6', 'test7',
                         'test8', 'test9', 'test10', 'test12', 'test13', 
                         'test14'} 
-      assert.are.same(expected, get_available_modules(search_paths, paths[1]))
+      assert.are.same(expected, get_available_modules(search_paths, paths[1]()))
     end)
   end)
 end)

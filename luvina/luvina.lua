@@ -9,7 +9,15 @@ local _ = require('moses')
 
 local luvina = {}
 
-local function is_module_candidate(mod_regex, candidates)
+function _.list(iter)
+  local xs = {}
+  for i, v in iter do
+    xs[#xs+1] = v
+  end
+  return xs
+end
+
+local function modules_in_candidates(mod_regex, candidates)
   local modules = _(candidates)
     :filter(function(_, c)
       local m = c:match(mod_regex)
@@ -21,10 +29,11 @@ local function is_module_candidate(mod_regex, candidates)
 end
 
 --- Returns a list of available modules able to be loaded in current scope
-function luvina.get_available_modules(search_paths, paths)
+function luvina.get_available_modules(search_paths, candidates_iter)
+  local candidates = _.list(candidates_iter)
   return _(search_paths)
     :map(function(k, path) return k, '^' .. string.gsub(path, '?', '(%%w+)') end)
-    :map(function(k, mod_regex) return k, is_module_candidate(mod_regex, paths) end)
+    :map(function(k, mod_regex) return k, modules_in_candidates(mod_regex, candidates) end)
     :flatten()
     :value()
 end
